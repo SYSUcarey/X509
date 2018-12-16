@@ -2,7 +2,6 @@ import java.security.*;
 import java.io.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.util.Scanner;
 
 
 public class X509 {
@@ -17,15 +16,14 @@ public class X509 {
 		}
 		
 		try {
-			CertificateFactory cf;
-			 // 获取工厂实例
-			cf = CertificateFactory.getInstance("X.509");
+			// 获取工厂实例
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
             // 用文件流读入证书
-			FileInputStream in=new FileInputStream(fileLocation);
+			FileInputStream fis = new FileInputStream(fileLocation);
 			// 生成证书
-		    Certificate c=cf.generateCertificate(in);
-		    X509Certificate t=(X509Certificate)c;
-		    in.close();
+		    Certificate c = cf.generateCertificate(fis);
+		    X509Certificate t = (X509Certificate)c;
+		    fis.close();
 		    System.out.println("版本号: " + t.getVersion());
 		    System.out.println("序列号: " + t.getSerialNumber().toString(16));
 		    System.out.println("颁发者部分: ");
@@ -71,17 +69,14 @@ public class X509 {
 		    	String value = subjectInfo[i].substring(index+1);
 		    	System.out.println("    [" + key + "]: " + value);
 		    }
-		    System.out.println("签名算法："+t.getSigAlgName());
-		    System.out.println("签名："+t.getSignature().toString());
+		    System.out.println("签名算法: " + t.getSigAlgName());
+		    System.out.println("签名: " + t.getSignature().toString());
+		    System.out.println("公钥: ");
 		    PublicKey pk = t.getPublicKey();
-		    byte [] pkenc = pk.getEncoded();  
-		    System.out.println("公钥:");
-		    for(int i = 0; i < pkenc.length; i++) {
-		    	System.out.print(String.format("%5d", pkenc[i]));
-		    	if(i != pkenc.length-1) System.out.print(",");
-		    	if(i%8 == 7) System.out.println();
-		    }
-		    System.out.println();
+		    String pkStr = pk.toString();
+		    String[] pkInfo = pkStr.split("\n");
+		    for(int i = 0; i < pkInfo.length; i++) 
+		    	System.out.println("    " + pkInfo[i].trim());
 		} catch (CertificateException e) {
 			System.out.println("Read " + fileLocation + " failed! ");
 		} catch (FileNotFoundException e) {
